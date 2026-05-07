@@ -14,7 +14,7 @@ config();
 const app=exp()
 app.use(
   cors({
-    origin: ["https://blog-frontend-pearl-psi.vercel.app/"],
+    origin: ["https://blog-frontend-git-main-rithvika-devs-projects.vercel.app/"],
     credentials:true,  //enables to send the token back to clients
     methods:["GET","POST","PUT","DELETE","OPTIONS"],
     allowedHeaders:["Content-Type","Authorization"],
