@@ -21,7 +21,6 @@ app.use(
   cors({
     origin: [
       "https://blog-frontend-git-main-rithvika-devs-projects.vercel.app",
-      "http://localhost:5173",
     ],
 
     credentials: true,
