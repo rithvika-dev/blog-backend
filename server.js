@@ -1,10 +1,12 @@
 import exp from "express";
 import { config } from "dotenv";
 import { connect } from "mongoose";
+
 import { userApp } from "./apis/userapi.js";
 import { adminApp } from "./apis/adminapi.js";
 import { authorApp } from "./apis/authorapi.js";
 import { commonApp } from "./apis/commonapi.js";
+
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -14,28 +16,52 @@ config();
 
 const app = exp();
 
+// CORS CONFIG
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
       "https://blog-frontend-git-main-rithvika-devs-projects.vercel.app",
+      "http://localhost:5173",
     ],
+
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 
+// IMPORTANT
+
+
 app.use(cookieParser());
+
 app.use(exp.json());
 
+// ROUTES
 app.use("/user-api", userApp);
+
 app.use("/admin-api", adminApp);
+
 app.use("/author-api", authorApp);
+
 app.use("/common-api", commonApp);
 
+// PORT
 const port = process.env.PORT || 5000;
 
+// DB CONNECTION
 const connectdb = async () => {
   try {
     await connect(process.env.DB_URL);
@@ -43,46 +69,52 @@ const connectdb = async () => {
     console.log("DB connected");
 
     app.listen(port, () =>
-      console.log("listening to port....")
+      console.log(
+        `Server running on port ${port}`
+      )
     );
   } catch (err) {
-    console.log("err in db connection", err);
+    console.log(
+      "err in db connection",
+      err
+    );
   }
 };
 
 connectdb();
 
+// INVALID PATH
 app.use((req, res, next) => {
   console.log(req.url);
 
-  return res
-    .status(404)
-    .json({ message: `path ${req.url} is invalid` });
+  return res.status(404).json({
+    message: `path ${req.url} is invalid`,
+  });
 });
 
+// GLOBAL ERROR HANDLER
 app.use((err, req, res, next) => {
   console.log(err.name);
 
+  // Validation Error
   if (err.name === "ValidationError") {
-    return res
-      .status(400)
-      .json({
-        message: "Error Occured",
-        error: err.message,
-      });
+    return res.status(400).json({
+      message: "Error Occurred",
+      error: err.message,
+    });
   }
 
+  // Cast Error
   if (err.name === "CastError") {
-    return res
-      .status(400)
-      .json({
-        message: "Error Occured",
-        error: err.message,
-      });
+    return res.status(400).json({
+      message: "Error Occurred",
+      error: err.message,
+    });
   }
 
+  // Server Error
   res.status(500).json({
-    message: "error occured",
+    message: "Error occurred",
     error: err.message,
   });
 });
